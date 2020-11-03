@@ -1,6 +1,7 @@
-# React Native Typescript Boilerplate
+# React Native Typescript RxJS Firebase Chat
 
-A easy to use, fully featured, React Native Boilerplate that helps you save time.
+Fully reactive firebase chat app
+
 
 ## Overview
 
@@ -31,9 +32,6 @@ The advantage of this is you don't have to spend time thinking about where to pu
 The generators assume your app is using this structure. You can customize the generators if your app is using an alternative structure e.g. domain based structure
 
 ```bash
-├── bin
-|   └── setup # Sets up the development environment
-├── e2e # Detox related files
 ├── generators # All of the different generators live here
 |   ├── templates
 |   └── utils
@@ -84,7 +82,6 @@ The src directory is structured like so:
 ├── navigation
 |   ├── actions
 |   └── navigators
-├── repositories
 ├── services
 ├── theme
 ├── utils
@@ -98,29 +95,29 @@ All of your custom components live here. The generator will automatically place 
 
 Each component is split into four files and stored in their own directory
 
-1. component.tsx
+1 component.tsx
 
 This is the actual file for the component. You wil write most of your code here.
 
-2. component.props.tsx
+2 component.test.tsx
 
-This file just exports a typescript interface that declares the prop types for the component. You can then import it in the main component file or any other part of your application.
+Tests for the component.
 
-3. component.story.tsx
+3 component.story.tsx
 
 This file houses the [story](https://storybook.js.org/docs/basics/writing-stories/) for your component.
 
 You can skip out on generating this file by saying no to the `Do you want to generate a story?` prompt in the CLI.
 
-4. component.styled.ts
+4 component.styled.ts
 
 Finally, this file houses the [styled components](https://www.styled-components.com) that belong to the main component file.
 
-#### lib
+#### Lib
 
 This folder is home to several sub-folders.
 
-##### hooks
+##### Hooks
 
 Contains any custom hooks you may have in your application.
 
@@ -142,7 +139,7 @@ import { t } from '@i18n';
 t('my.awesome.key');
 ```
 
-##### setup
+##### Setup
 
 This folder is inspired by the rails `config/initializers` which houses code that will be ran when your app is initialized.
 
@@ -154,11 +151,11 @@ You may want to include things like `GoogleSignIn.configure` or `Stripe.configur
 
 Make sure to import each setup file in the `lib/setup/index.ts`.
 
-##### typings
+##### Typings
 
 This folder houses any custom typescript type declaration files.
 
-### models
+### Models
 
 This folder is home to all of your MST (MobX State Tree Models). Models can be auto generated using `yarn g model [name]` and you can pass a set of attributes to the CLI generator.
 
@@ -166,59 +163,68 @@ The models are declared using ES6 Classes and decorators thanks to [mst-decorato
 
 You can learn more about [MobX State Tree here](https://github.com/farwayer/mst-decorators)
 
-### navigation
+### Navigation
 
 This folder houses all code that relates to react-navigation.
 
 The navigators live in their own separate folder and so do navigation actions.
 
-### repositories
+### Store
 
-This folder stores all of your repositories. A repository is responsible for fetching/mutating data from a 3rd party service (e.g. an API or Firestore).
+This folder stores all of your stores. A store is responsible to keep and share state between components reactively.
 
-By default, an `AuthRepository` is included that relies on `@react-native-firebase/auth`
-
-The purpose of a repository is to make it easier in the future to migrate away from Firebase (or to switch do a different service provider) without having to make too many changes in different files.
-
-An example of a repository can be seen here:
+An example of a store can be seen here:
 
 ```ts
-/**
- * An example of using the repository pattern with Firebase.
- * It makes it easer to migrate away from Firebase in the future by having all your
- * database code de-coupled from your React Components or mobx store, wrapped up in
- * a custom, easily transferrable DSL
- */
-import auth from '@react-native-firebase/auth';
+type AppStoreState = {
+  firstLaunch: boolean;
+};
 
-class AuthRepository {
-  signIn = (email: string, password: string) => {
-    return auth().signInWithEmailAndPassword(email, password);
-  };
+const initialAppStoreState: AppStoreState = {
+  firstLaunch: true,
+};
+const APP_FIRST_LAUNCH = 'APP_FIRST_LAUNCH';
+export default class AppStore {
+  static getInstance() {
+    if (!this.instance) {
+      Log.debug('AppStore init');
+      this.instance = new AppStore();
+    }
+    return this.instance;
+  }
 
-  register = (email: string, password: string) => {
-    return auth().createUserWithEmailAndPassword(email, password);
+  private state: BehaviorSubject<AppStoreState>;
+  private static instance: AppStore;
+
+  constructor() {
+    this.state = new BehaviorSubject<AppStoreState>(initialAppStoreState);
+  }
+  initializeApp = async () => {
+    const firstLaunch = await load(APP_FIRST_LAUNCH);
+    this.state.next({ firstLaunch });
   };
+  firstLaunchDone = () => {
+    save(APP_FIRST_LAUNCH, false);
+    this.state.next({ firstLaunch: false });
+  };
+  firstLaunch = () => this.state.pipe(map(({ firstLaunch }) => firstLaunch));
 }
-
-const authRepository = new AuthRepository();
-export default authRepository;
 ```
 
-### services
+### Services
 
 Each service file encapsules some re-usable business logic.
 Services can also be generated by running `yarn g service [name]`
 
-### theme
+### Theme
 
 The theme folder contains code related to global application styles (fonts, colors, navigation styles, metrics) etc. It makes it easy to change things like font-family, primary colors without having to change every single react native component.
 
-### utils
+### Utils
 
 Houses re-usable utility functions.
 
-### views
+### Views
 
 Views are screens displayed to the end user. Views themselves should be quite simple, composed of several different components.
 
@@ -247,81 +253,6 @@ yarn generate component [name]
 yarn g component [name] # you can use the shorthand
 ```
 
-The output will be something like so:
-
-```bash
-yarn run v1.19.1
-
-$ yarn run generate component test
-$ plop component test
-
-? Do you want to generate a story? (Y/n) Y
-? What sub folder should this component stay in?
-
-✔  ++ /src/components/test/test.tsx
-✔  ++ /src/components/test/test.props.ts
-✔  ++ /src/components/test/test.styled.ts
-✔  ++ /src/components/test/test.story.tsx
-✔  _+ /storybook/stories.ts
-✨  Done in 31.36s.
-```
-
-The resulting files will be:
-
-test.tsx
-
-```tsx
-import React from 'react';
-import { Text } from 'react-native';
-import { TestProps } from './test.props';
-import { Wrapper } from './test.styled';
-
-const Test = (props: TestProps) => {
-  return (
-    <Wrapper>
-      <Text>Test</Text>
-    </Wrapper>
-  );
-};
-
-export default Test;
-```
-
-test.props.ts
-
-```tsx
-import { StyleProp, ViewStyle } from 'react-native';
-
-export interface TestProps {
-  style?: StyleProp<ViewStyle>;
-}
-```
-
-test.styled.ts
-
-```tsx
-import styled from 'styled-components/native';
-
-export const Wrapper = styled.View`
-  flex: 1;
-`;
-```
-
-test.story.tsx
-
-```tsx
-import React from 'react';
-import { storiesOf } from '@storybook/react-native';
-import Test from './test';
-
-declare let module: any;
-
-storiesOf('Test', module).add('Default view', () => {
-  <Test />;
-});
-```
-
-How cool is that? 😎
 
 ### View Generator
 
@@ -329,69 +260,6 @@ How cool is that? 😎
 yarn g view [name]
 ```
 
-```bash
-yarn run v1.19.1
-
-$ yarn run generate view test
-$ plop view test
-
-✔  ++ /src/views/test/test.tsx
-✔  ++ /src/views/test/test.styled.ts
-✔  ++ /test/views/test.test.tsx
-
-✨  Done in 4.11s.
-```
-
-test.tsx
-
-```tsx
-import React from 'react';
-import { Text } from '@components';
-import { useNavigation } from '@react-navigation/native';
-import { t } from '@i18n';
-import { Wrapper } from './test.styled';
-
-const Test = () => {
-  const { setOptions } = useNavigation();
-
-  setOptions({
-    title: t('views.test.title'),
-  });
-
-  return (
-    <Wrapper>
-      <Text>Test</Text>
-    </Wrapper>
-  );
-};
-
-export default Test;
-```
-
-test.styled.ts
-
-```tsx
-import styled from 'styled-components/native';
-import { Container } from '@components';
-
-export const Wrapper = styled(Container)`
-  flex: 1;
-`;
-```
-
-test.test.tsx
-
-```tsx
-import React from 'react';
-import renderer from 'react-test-renderer';
-import Test from '../../src/views/test/test';
-import MockedComponent from '../support/mocked-component';
-
-it('renders correctly', () => {
-  const tree = renderer.create(<MockedComponent Component={Test} />).toJSON();
-  expect(tree).toMatchSnapshot();
-});
-```
 
 ### Model Generator
 
@@ -401,52 +269,6 @@ To generate a MST Model run:
 yarn g model [name]
 ```
 
-You can automatically generate fields on your user model by passing in attributes to the `Models attributes` prompt like so:
-
-> The format must be [name]:[type] e.g. name:string
-
-```bash
-yarn run v1.19.1
-$ yarn run generate model user
-$ plop model user
-
-? Models attributes e.g. name:string username:string () name:string username:string
-```
-
-models/user.ts
-
-```ts
-import { model, id, string } from 'mst-decorators';
-
-class User {
-  @id id: string;
-  @string name: string;
-  @string username: string;
-}
-
-export default model(User);
-```
-
-models/index.ts
-
-```ts
-/* PLOP_INJECT_EXPORT */
-export { default as User } from './user';
-```
-
-test/models/user.ts
-
-```tsx
-import { getSnapshot } from 'mobx-state-tree';
-import User from '../../src/models/user';
-
-describe('User model', () => {
-  it('it can be created', () => {
-    const user = User.create();
-    expect(getSnapshot(user)).toEqual({});
-  });
-});
-```
 
 ### Navigator Generator
 
@@ -456,92 +278,6 @@ To create a `react-navigation` navigator, run
 yarn g navigator [name]
 ```
 
-```bash
-yarn run v1.19.1
-
-$ yarn run generate navigator home
-$ plop navigator home
-
-? type: (Use arrow keys)
-❯ stack
-  drawer
-  tab
-
-? type: stack
-✔  ++ /src/navigation/navigators/home.tsx
-✨  Done in 21.40s.
-```
-
-The output will be:
-
-```tsx
-import React, { Fragment } from 'react';
-import { createStackNavigator } from '@react-navigation/stack';
-import useNavigationStyles from '../use-navigation-styles';
-import routes from '../routes';
-
-const Stack = createStackNavigator();
-
-const HomeNavigator = () => {
-  // Allows you to use dark mode with the header
-  const { headerStyle, headerTitleStyle } = useNavigationStyles();
-  const screenOptions = {
-    headerStyle,
-    headerTitleStyle,
-  };
-  return (
-    <Stack.Navigator screenOptions={screenOptions}>
-      <Stack.Screen name={routes.home} component={Fragment} />
-    </Stack.Navigator>
-  );
-};
-
-export default HomeNavigator;
-```
-
 ### Service Generator
 
 `yarn g service [name]`
-
-- Generates the server file
-- Generates a test file
-- Adds the service to the `index.ts` as an export
-
-### Repository Generator
-
-`yarn g repository [name]`
-
-- Generates the repository file
-- Generates a test file
-- Adds the repository to the `index.ts` as an export
-
-## Vector Icons
-
-This project provides a nice interface for dealing with vector icons, powered by the amazing [react-native-vector-icons](https://github.com/oblador/react-native-vector-icons) library, included by default.
-
-Usage Example:
-
-```tsx
-import { Icon } from '@components';
-
-export default () => (
-  <Icon type="fa" name="facebook-f" onPress={() => alert('Facebook icon on press')} size="small" />
-);
-```
-
-You can view the prop types in the [icon.props.ts](./src/components/icon/icon.props.ts) file for more information on how to use it.
-
-## Background
-
-This project is inspired by the [Ignite CLI for React Native](https://github.com/infinitered/ignite). Parts of the code were taken from the [Ignite Bowser Boilerplate](https://github.com/infinitered/ignite-bowser).
-
-I made this project because I found myself spending too much time setting up a new project using React Native. There's always so many things you have to install manually e.g. `styled-components` `react-navigation` `eslint-airbnb-config` `commitlint` `prettier` to name a few.
-
-Using this poilerplate should hopefully save you and your team a lot of time when starting your next project
-
-The main difference between this and Ignite CLI is this is much more lightweight, with less included. I find it much easier to work with a light boilerplate, than a heavy one since most of the time you would want to change/remove things. So having a slimmed down, easier to use version seemed like a good idea to me.
-
-## Roadmap
-
-- Add unit tests
-- Add more generators (class component generator)
