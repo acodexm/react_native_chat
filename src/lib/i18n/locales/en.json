@@ -1,0 +1,109 @@
+{
+  "views": {
+    "profile": {
+      "title": "Profile",
+      "displayName": "Name",
+      "about": "About me"
+    },
+    "explore": {
+      "title": "Explore"
+    },
+    "settings": {
+      "title": "Settings",
+      "appSettings": "Application",
+      "appSettingsDesc": "todo",
+      "notifications": "Notifications",
+      "notificationsDesc": "todo",
+      "signOut": "Sign out",
+      "signOutDesc": "todo"
+    },
+    "chatList": {
+      "title": "Chat"
+    },
+    "home": {
+      "title": "Chat",
+      "noChat": "No chats yet ;( go to explore tab :D"
+    },
+    "login": {
+      "title": "Login"
+    },
+    "resetPass": {
+      "title": "Reset password"
+    },
+    "register": {
+      "title": "Register"
+    }
+  },
+  "button": {
+    "ok": "OK",
+    "confirm": "Confirm",
+    "send": "Send",
+    "create": "Create",
+    "delete": "Delete",
+    "add": "Add",
+    "apply": "Apply",
+    "cancel": "Cancel",
+    "register": "Register",
+    "reset": "Reset",
+    "forgotPassword": "Forgot password",
+    "update": "Update",
+    "login": "Login",
+    "loginGoogle": "Login with Google",
+    "pickDate": "Pick Date"
+  },
+  "value": {
+    "error": {
+      "required": "Field required"
+    }
+  },
+  "email": {
+    "label": "Email",
+    "placeholder": "example@gmail.com",
+    "error": {
+      "required": "Email is required",
+      "invalid": "Invalid email"
+    }
+  },
+  "password": {
+    "label": "Password",
+    "placeholder": "P@ssw0rd",
+    "error": {
+      "required": "Password is required",
+      "short": "Password too short! Minimum {min} characters"
+    }
+  },
+  "passwordCheck": {
+    "label": "Repeat password",
+    "placeholder": "***",
+    "error": {
+      "required": "Password is required",
+      "not_match": "Password don't match"
+    }
+  },
+  "dialogs": {
+    "singOut": {
+      "title": "Sing out",
+      "description": "Are you sure You want to sing out from the account?"
+    },
+    "newEvent": {
+      "title": "Event Title",
+      "description": "Event description"
+    },
+    "chat": {
+      "title": "Chat room title",
+      "description": "Description"
+    }
+  },
+  "snackbars": {},
+  "toasts": {
+    "onExit": "Press again to exit",
+    "onLoginFailed": "Something went wrong, try again",
+    "onRegisterFailed": "Something went wrong, try again",
+    "onResetFailed": "Something went wrong, try again"
+  },
+  "notifications": {},
+  "routes": {
+    "unauthorized": "User is not authorised to access this page",
+    "notFound": "No route defined for {route}"
+  }
+}

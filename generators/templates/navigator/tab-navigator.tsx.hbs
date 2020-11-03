@@ -1,0 +1,16 @@
+import React, {Fragment} from 'react'
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs'
+import useNavigationStyles from '../use-navigation-styles'
+
+const Tab = createBottomTabNavigator()
+
+const {{pascalCase name}}Navigator = () => {
+  const {tabBarOptions} = useNavigationStyles()
+  return (
+    <Tab.Navigator tabBarOptions={tabBarOptions}>
+      <Tab.Screen name="" component={Fragment} />
+    </Tab.Navigator>
+  )
+}
+
+export default {{pascalCase name}}Navigator

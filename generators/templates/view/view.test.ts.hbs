@@ -1,0 +1,9 @@
+import React from 'react';
+import { render } from '@testing-library/react-native';
+import {{pascalCase name}} from '@views/{{kebabCase name}}/{{kebabCase name}}';
+import MockedComponent from '../support/mocked-component';
+
+it('renders correctly', () => {
+  const tree = render(<MockedComponent Component={ {{pascalCase name}} } />).toJSON();
+  expect(tree).toMatchSnapshot();
+});

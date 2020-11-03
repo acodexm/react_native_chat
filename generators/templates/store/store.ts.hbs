@@ -1,0 +1,63 @@
+import {BehaviorSubject} from "rxjs";
+import {v4 as uuid} from 'uuid';
+import {map} from "rxjs/operators";
+
+type {{pascalCase name}} = {
+    _id: string;
+}
+
+type {{pascalCase name}}StoreState = {
+    dataList:{{pascalCase name}}[];
+}
+
+const initial{{pascalCase name}}StoreState: {{pascalCase name}}StoreState = {
+    dataList:[]
+}
+
+export default class {{pascalCase name}}Store {
+    static getInstance() {
+        if(!this.instance) {
+            this.instance = new {{pascalCase name}}Store();
+        }
+        return this.instance;
+    }
+
+    private readonly state: BehaviorSubject<{{pascalCase name}}StoreState>;
+    private static instance: {{pascalCase name}}Store;
+
+    constructor({{camelCase name}}StoreState: {{pascalCase name}}StoreState = initial{{pascalCase name}}StoreState) {
+         this.state = new BehaviorSubject({{camelCase name}}StoreState);
+    }
+    updateState = (value: Partial<{{pascalCase name}}StoreState>) => {
+        const currentState = this._state.getValue();
+        this._state.next({ ...currentState, ...value });
+    };
+
+    get state(): BehaviorSubject<{{pascalCase name}}StoreState> {
+        return this._state;
+    }
+
+    get dataLength(): number {
+        return this.state.getValue().dataList.length;
+    }
+
+    get = (id: string) => {
+        const currentState = this.state.getValue();
+        return currentState.dataList.find(({_id}) => _id === id);
+    }
+
+    getList = () => this.state.pipe(
+        map(({dataList}) => dataList)
+    );
+
+    add = (data: Omit<{{pascalCase name}}, '_id'>) => {
+        const currentState = this.state.getValue();
+        this.state.next({...currentState, dataList: [...currentState.dataList, {...data, _id: uuid()}]})
+    }
+
+    remove = (id: string) => {
+        const currentState = this.state.getValue();
+        this.state.next({...currentState, dataList: currentState.dataList.filter(({_id}) => _id !== id)})
+    }
+}
+

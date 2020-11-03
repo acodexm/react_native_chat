@@ -1,0 +1,17 @@
+import React, { FunctionComponent } from 'react'
+import { Text } from 'react-native'
+import { Wrapper } from './{{kebabCase name}}.styled'
+import {StyleProp, ViewStyle} from 'react-native'
+
+interface {{pascalCase name}}Props {
+  style?: StyleProp<ViewStyle>
+}
+const {{pascalCase name}}: FunctionComponent<{{pascalCase name}}Props> = (props) => {
+  return (
+    <Wrapper>
+      <Text testID={'testId'}>{{pascalCase name}}</Text>
+    </Wrapper>
+  )
+}
+
+export default {{pascalCase name}}

@@ -1,0 +1,13 @@
+import { toJson, jsonMember, jsonObject, TypedJSON } from 'typedjson';
+
+@toJson
+@jsonObject
+export default class {{pascalCase name}} {
+  {{#each fields}}
+    @jsonMember
+  {{camelCase this.name}}: {{this.type}};
+  {{/each}}
+   static parse = (data: any): {{pascalCase name}} | undefined => {
+      return TypedJSON.parse(data, {{pascalCase name}});
+   };
+}

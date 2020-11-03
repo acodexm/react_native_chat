@@ -1,0 +1,14 @@
+interface {{pascalCase name}}Service {}
+
+class {{pascalCase name}}ServiceImpl implements {{pascalCase name}}Service {
+  static getInstance() {
+    if (!this.instance) {
+      this.instance = new {{pascalCase name}}ServiceImpl();
+    }
+    return this.instance;
+  }
+  private static instance: {{pascalCase name}}ServiceImpl;
+}
+
+const {{camelCase name}}Service = {{pascalCase name}}ServiceImpl.getInstance();
+export default {{camelCase name}}Service

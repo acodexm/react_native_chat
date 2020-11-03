@@ -1,0 +1,29 @@
+import {{pascalCase name}}Store from '@store/{{kebabCase name}}'
+
+describe('{{pascalCase name}} store', () => {
+  it('no errors', () => {
+      expect({{pascalCase name}}Store).toBeTruthy();
+  });
+    let store: {{pascalCase name}}Store;
+    let id: string;
+    beforeAll(() => {
+      store = {{pascalCase name}}Store.getInstance();
+    });
+    it('add', () => {
+      store.add({ anything: 'anything' });
+      expect(store.dataLength).toEqual(1);
+    });
+    it('getList', () => {
+      store.getList().subscribe((value) => {
+        id = value[0]._id;
+      });
+      expect(id).toBeTruthy();
+    });
+    it('get', () => {
+      expect(store.get(id)).toEqual({ _id: id, anything: 'anything' });
+    });
+    it('remove', () => {
+      store.remove(id);
+      expect(store.get(id)).toBeUndefined();
+    });
+})

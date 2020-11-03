@@ -1,0 +1,7 @@
+generators/*
+plopfile.ts
+firebase
+ios
+android
+storybook
+node_modules
